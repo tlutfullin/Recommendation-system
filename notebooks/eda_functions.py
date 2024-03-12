@@ -1,23 +1,20 @@
 import pandas as pd
-import numpy as np
-
 import matplotlib.pyplot as plt
 import seaborn as sns
-from scipy.stats import chi2_contingency
 from sklearn.metrics import mutual_info_score
 
 
-
-## ====================================== Общий макет графика для всех коэффициентов ============================================= ##
+## ====================================== Общий макет графика ============================================= ##
 def plot_heatmap(matrix_data, title):
     plt.figure(figsize=(10, 8))
-    sns.heatmap(matrix_data, annot=True, cmap='RdYlGn',linewidths=0.2, fmt='.2f')
+    sns.heatmap(matrix_data, annot=True, cmap="RdYlGn", linewidths=0.2, fmt=".2f")
     plt.title(f"{title}", fontsize=16, pad=10)
     plt.tight_layout()
     plt.show()
 
 
 ## ====================================== Коэффициенты V-Крамера  ============================================= ##
+
 
 # подсчет коэффициентов V-Крамера для двух признаков
 def cramers_v(x, y):
@@ -26,24 +23,23 @@ def cramers_v(x, y):
     n = confusion_matrix.sum().sum()
     phi2 = chi2 / n
     r, k = confusion_matrix.shape
-    phi2corr = max(0, phi2 - ((k-1)*(r-1))/(n-1))
-    rcorr = r - ((r-1)**2)/(n-1)
-    kcorr = k - ((k-1)**2)/(n-1)
-    return np.sqrt(phi2corr / min((kcorr-1), (rcorr-1)))
+    phi2corr = max(0, phi2 - ((k - 1) * (r - 1)) / (n - 1))
+    rcorr = r - ((r - 1) ** 2) / (n - 1)
+    kcorr = k - ((k - 1) ** 2) / (n - 1)
+    return np.sqrt(phi2corr / min((kcorr - 1), (rcorr - 1)))
+
 
 # строим матрицу коэффициентов для всех категориальных признаков
 def cramers_matrix(df):
     cols = df.columns
     n_cols = len(cols)
     corr_matrix = np.zeros((n_cols, n_cols))
-    
+
     for i in range(n_cols):
         for j in range(n_cols):
-            corr_matrix[i,j] = cramers_v(df[cols[i]], df[cols[j]])
-    
+            corr_matrix[i, j] = cramers_v(df[cols[i]], df[cols[j]])
+
     return pd.DataFrame(corr_matrix, index=cols, columns=cols)
-
-
 
 
 ## ================================== Коэффициенты меры информационной взаимосвязи (Mutual Information) ============================== ##
@@ -57,24 +53,24 @@ def mutual_information_matrix(df):
     cols = df.columns
     n_cols = len(cols)
     mi_matrix = np.zeros((n_cols, n_cols))
-    
+
     for i in range(n_cols):
         for j in range(n_cols):
-            mi_matrix[i,j] = mutual_information(df[cols[i]], df[cols[j]])
-    
-    return pd.DataFrame(mi_matrix, index=cols, columns=cols)
+            mi_matrix[i, j] = mutual_information(df[cols[i]], df[cols[j]])
 
+    return pd.DataFrame(mi_matrix, index=cols, columns=cols)
 
 
 ## ====================================== Коэффициенты меры условной энтропии ============================================= ##
 
+
 def conditional_entropy(x, y):
     # Строим таблицу сопряженности
     contingency_table = pd.crosstab(x, y)
-    
+
     # Получаем общее количество наблюдений
     total_samples = contingency_table.sum().sum()
-    
+
     # Вычисляем меру условной энтропии
     conditional_entropy = 0
     for col in contingency_table.columns:
@@ -84,9 +80,8 @@ def conditional_entropy(x, y):
             pxy = contingency_table.loc[row, col] / total_samples
             if pxy > 0:
                 conditional_entropy += pxy * np.log2(py_given_x / px)
-    
-    return -conditional_entropy
 
+    return -conditional_entropy
 
 
 def conditional_entropy_matrix(df):
@@ -101,6 +96,3 @@ def conditional_entropy_matrix(df):
                 cond_entropy_matrix[i, j] = conditional_entropy(df[col1], df[col2])
 
     return pd.DataFrame(cond_entropy_matrix, index=df.columns, columns=df.columns)
-
-
-
