@@ -1,8 +1,7 @@
 import pandas as pd
-import numpy as np
-from typing import List, Dict, Tuple
 
 
+# Преобразование типов данных 
 def modify_column_data_type(col_name: pd.DataFrame) -> pd.DataFrame:
     """
     This function takes a pandas dataframe and a column name as input and returns the modified data type of the column.
@@ -48,10 +47,19 @@ def load_data(path: str) -> pd.DataFrame:
     try:
 
         df = pd.read_csv(path)
+        
+        # Оцениваем объем памяти, используемый DataFrame
+        memory_usage = df.memory_usage(deep=True).sum()
+        print(f"Memory usage before: {memory_usage//(1024**2):.3f} MB")
+        
         dtype_dict = {
             col: modify_column_data_type(df[col]) for col in df.columns
         }
         df = df.astype(dtype_dict)
+
+        # Оцениваем объем памяти, используемый DataFrame после преобразования типов данных
+        memory_usage = df.memory_usage(deep=True).sum()
+        print(f"Memory usage after: {memory_usage/(1024**2):.3f} MB")
 
         return df
 
@@ -60,14 +68,3 @@ def load_data(path: str) -> pd.DataFrame:
 
     finally:
         print(f"Data loaded from {path}")
-
-
-def remove_null_data(df: pd.DataFrame, count_null: float = 0.8) -> pd.DataFrame:
-
-    pass
-
-
-df = load_data("data/raw/train_df.csv")
-
-print(df.info())
-
