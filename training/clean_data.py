@@ -1,5 +1,4 @@
 import pandas as pd
-from prepare_data import load_data
 
 
 def clean_data(data: pd.DataFrame, threshold: float = 0.8) -> pd.DataFrame:
@@ -29,13 +28,13 @@ def clean_data(data: pd.DataFrame, threshold: float = 0.8) -> pd.DataFrame:
 
         # Удаляем строки, в которых более threshold значений являются NaN
         data = data.dropna(axis=1, thresh=int(threshold * num_rows))
- 
+
         # Удаляем столбцы, в которых больше threshold значений являются NaN
         data = data.dropna(axis=0, thresh=int(threshold * num_columns))
 
         # Удаляем константные признаки
-        constant_name = data.columns[data.nunique() == 1]
-        data = data.drop(constant_name)
+        constant_name = list(data.columns[data.nunique() == 1])
+        data = data.drop(columns=constant_name)
 
         return data
 

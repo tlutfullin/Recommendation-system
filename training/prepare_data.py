@@ -1,19 +1,19 @@
 import pandas as pd
 
 
-# Преобразование типов данных 
+# Преобразование типов данных
 def modify_column_data_type(col_name: pd.DataFrame) -> pd.DataFrame:
     """
-    This function takes a pandas dataframe and a column name as input and returns the modified data type of the column.
+    Эта функция принимает в качестве входных данных кадр данных pandas и имя столбца и возвращает измененный тип данных столбца.
 
-    Parameters:
-    col_name (pd.DataFrame): The pandas dataframe containing the column whose data type needs to be modified.
+    Параметры:
+    col_name (pd.DataFrame): кадр данных pandas, содержащий столбец, тип данных которого необходимо изменить.
 
-    Returns:
-    pd.DataFrame: The modified data type of the column.
+    Возврат:
+    pd.DataFrame: измененный тип данных столбца.
 
-    Raises:
-    Exception: If the data type of the column cannot be modified, it raises an exception.
+    Поднимает:
+    Исключение: если тип данных столбца не может быть изменен, возникает исключение.
 
     """
     try:
@@ -47,11 +47,11 @@ def load_data(path: str) -> pd.DataFrame:
     try:
 
         df = pd.read_csv(path)
-        
+
         # Оцениваем объем памяти, используемый DataFrame
         memory_usage = df.memory_usage(deep=True).sum()
         print(f"Memory usage before: {memory_usage//(1024**2):.3f} MB")
-        
+
         dtype_dict = {
             col: modify_column_data_type(df[col]) for col in df.columns
         }
